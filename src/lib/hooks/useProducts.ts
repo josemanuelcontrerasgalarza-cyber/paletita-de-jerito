@@ -3,13 +3,6 @@ import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase'
 import { Product } from '@/lib/types'
 
-// Demo products for demo mode
-const DEMO_PRODUCTS: Product[] = [
-  { id: 'p1', user_id: 'demo', name: 'Paleta Limón', emoji: '🍋', price: 2500, cost: 800, created_at: new Date().toISOString() },
-  { id: 'p2', user_id: 'demo', name: 'Paleta Fresa', emoji: '🍓', price: 2500, cost: 800, created_at: new Date().toISOString() },
-  { id: 'p3', user_id: 'demo', name: 'Paleta Mango', emoji: '🥭', price: 3000, cost: 1000, created_at: new Date().toISOString() },
-]
-
 export function useProducts() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
@@ -19,7 +12,7 @@ export function useProducts() {
   const fetchProducts = useCallback(async () => {
     setLoading(true)
     if (isDemo) {
-      setProducts(DEMO_PRODUCTS)
+      setProducts([])
       setLoading(false)
       return
     }
