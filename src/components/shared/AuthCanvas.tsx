@@ -8,6 +8,7 @@ export function AuthCanvas() {
     const c = ref.current
     if (!c) return
     const ctx = c.getContext('2d')!
+    const canvas = c as HTMLCanvasElement
     const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight }
     resize()
     window.addEventListener('resize', resize)
@@ -20,8 +21,6 @@ export function AuthCanvas() {
       dy: (Math.random() - 0.5) * 0.25,
       o: Math.random() * 0.6 + 0.1,
     }))
-
-    const canvas = c as HTMLCanvasElement
     let raf: number
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
