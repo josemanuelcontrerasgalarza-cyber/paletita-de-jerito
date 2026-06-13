@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { Topbar } from '@/components/layout/Topbar'
 import { Toaster } from '@/components/shared/Toast'
+import { showToast } from '@/components/shared/Toast'
 
 const BOTTOM_NAV = [
   { href: '/dashboard', icon: '⚡', label: 'Inicio' },
@@ -26,6 +27,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const [ready, setReady] = useState(false)
   const [moreOpen, setMoreOpen] = useState(false)
+  const [resetConfirm, setResetConfirm] = useState(false)
+  const [resetting, setResetting] = useState(false)
 
   useEffect(() => {
     const isDemo = localStorage.getItem('pp_demo') === 'true'
@@ -37,6 +40,35 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }, [router])
 
   useEffect(() => { setMoreOpen(false) }, [pathname])
+
+  async function handleReset() {
+    setResetting(true)
+    const isDemo = localStorage.getItem('pp_demo') === 'true'
+    if (isDemo) {
+      showToast('Datos demo reiniciados', 'error')
+      setResetting(false)
+      setResetConfirm(false)
+      setMoreOpen(false)
+      router.refresh()
+      return
+    }
+    try {
+      const sb = createClient()
+      const { data: { user } } = await sb.auth.getUser()
+      if (!user) { showToast('No autenticado', 'error'); setResetting(false); return }
+      await sb.from('sales').delete().eq('user_id', user.id)
+      await sb.from('inventory').delete().eq('user_id', user.id)
+      await sb.from('products').delete().eq('user_id', user.id)
+      await sb.from('partners').delete().eq('user_id', user.id)
+      showToast('Todos los datos han sido eliminados')
+      setResetConfirm(false)
+      setMoreOpen(false)
+      router.push('/dashboard')
+    } catch {
+      showToast('Error al resetear', 'error')
+    }
+    setResetting(false)
+  }
 
   if (!ready) {
     return (
@@ -64,6 +96,44 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           {children}
         </main>
       </div>
+
+      {/* Modal de confirmación reset */}
+      <AnimatePresence>
+        {resetConfirm && (
+          <div className="fixed inset-0 z-[200] flex items-center justify-center px-4" style={{ background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)' }}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="glass-card p-6 w-full max-w-sm relative overflow-hidden"
+            >
+              <div className="absolute top-0 left-0 right-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,77,79,0.8), transparent)' }} />
+              <div className="text-3xl mb-3 text-center">⚠️</div>
+              <div className="text-base font-bold text-center mb-2" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>¿Eliminar todos los datos?</div>
+              <div className="text-sm text-center mb-5" style={{ color: 'var(--text-muted)', fontFamily: 'Inter', fontWeight: 300 }}>
+                Se borrarán <strong style={{ color: '#FF4D4F' }}>todas las ventas, productos, inventario y socios</strong>. Esta acción no se puede deshacer.
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setResetConfirm(false)}
+                  className="btn-glass flex-1"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleReset}
+                  disabled={resetting}
+                  className="flex-1 py-3 rounded-full text-sm font-bold transition-all disabled:opacity-50"
+                  style={{ background: 'rgba(255,77,79,0.15)', border: '1px solid rgba(255,77,79,0.3)', color: '#FF4D4F', fontFamily: "'Plus Jakarta Sans', sans-serif", boxShadow: resetting ? 'none' : '0 0 16px rgba(255,77,79,0.2)' }}
+                >
+                  {resetting ? 'Eliminando...' : '🗑 Sí, eliminar todo'}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* More drawer */}
       <AnimatePresence>
@@ -100,6 +170,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   {pathname === item.href && <span className="ml-auto w-2 h-2 rounded-full" style={{ background: '#FF6B35' }} />}
                 </Link>
               ))}
+
+              {/* Reset button */}
+              <button
+                onClick={() => { setResetConfirm(true); setMoreOpen(false) }}
+                className="w-full flex items-center gap-4 px-5 py-4 transition-all"
+                style={{ color: '#FF4D4F' }}
+              >
+                <span className="text-2xl">🗑</span>
+                <span className="text-sm font-semibold" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Resetear datos</span>
+              </button>
             </motion.div>
           </>
         )}
