@@ -10,9 +10,9 @@ import { Toaster } from '@/components/shared/Toast'
 const BOTTOM_NAV = [
   { href: '/dashboard', icon: '⚡', label: 'Inicio' },
   { href: '/pos', icon: '💳', label: 'Vender' },
-  { href: '/products', icon: '🏷', label: 'Productos' },
   { href: '/inventory', icon: '📦', label: 'Stock' },
   { href: '/sales', icon: '📊', label: 'Ventas' },
+  { href: '/partners', icon: '👥', label: 'Más' },
 ]
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
