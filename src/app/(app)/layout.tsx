@@ -17,6 +17,7 @@ const BOTTOM_NAV = [
 
 const MORE_NAV = [
   { href: '/products', icon: '🏷', label: 'Productos' },
+  { href: '/partners', icon: '👥', label: 'Socios' },
   { href: '/reinvest', icon: '🚀', label: 'Reinversión' },
 ]
 
