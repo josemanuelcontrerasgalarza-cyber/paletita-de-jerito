@@ -1,6 +1,5 @@
 'use client'
-import { useEffect, useRef } from 'react'
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
+import { motion } from 'framer-motion'
 
 interface Props {
   icon: string
@@ -10,18 +9,20 @@ interface Props {
   delay?: number
 }
 
-export function StatCard({ icon, label, value, color = '#3B82F6', delay = 0 }: Props) {
+export function StatCard({ icon, label, value, color = '#FF6B35', delay = 0 }: Props) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.4 }}
-      className="relative overflow-hidden rounded-2xl p-5 border border-[rgba(59,130,246,0.15)] bg-[#1F2937] hover:-translate-y-1 transition-transform duration-200"
+      className="glass-card specular p-5 relative overflow-hidden"
     >
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[rgba(59,130,246,0.4)] to-transparent" />
-      <div className="text-2xl mb-2">{icon}</div>
-      <div className="text-[10px] uppercase tracking-widest font-semibold text-[#94A3B8] mb-1">{label}</div>
-      <div className="text-2xl font-black" style={{ color }}>{value}</div>
+      {/* Ambient glow */}
+      <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full pointer-events-none" style={{ background: `radial-gradient(circle, ${color}20, transparent 70%)` }} />
+      {/* Floating icon */}
+      <div className="text-2xl mb-3 relative z-10" style={{ filter: `drop-shadow(0 4px 12px ${color}60)` }}>{icon}</div>
+      <div className="text-[9px] uppercase tracking-widest font-semibold mb-1.5" style={{ color: 'var(--text-muted)', fontFamily: 'Inter' }}>{label}</div>
+      <div className="text-2xl font-bold mono" style={{ color, fontFamily: "'JetBrains Mono', monospace" }}>{value}</div>
     </motion.div>
   )
 }

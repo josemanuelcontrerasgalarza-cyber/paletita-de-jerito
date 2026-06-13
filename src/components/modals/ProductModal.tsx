@@ -47,44 +47,47 @@ export function ProductModal({ open, onClose, onSaved, demoAdd }: Props) {
   return (
     <AnimatePresence>
       {open && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 backdrop-blur-sm" onClick={e => e.target === e.currentTarget && onClose()}>
+        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center" style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)' }} onClick={e => e.target === e.currentTarget && onClose()}>
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            className="relative bg-[#111827] border border-purple-500/20 rounded-2xl p-7 w-[440px] max-w-[95vw]"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 40 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className="glass specular w-full sm:w-[440px] max-w-[95vw] rounded-t-3xl sm:rounded-3xl p-7 relative overflow-hidden"
           >
-            <div className="absolute top-0 left-0 right-0 h-px rounded-t-2xl bg-gradient-to-r from-transparent via-purple-500 to-blue-500" />
-            <button onClick={onClose} className="absolute top-4 right-4 w-7 h-7 rounded-lg bg-white/5 text-[#94A3B8] hover:text-white text-sm flex items-center justify-center transition-all">✕</button>
-            <div className="text-lg font-black mb-1">🆕 Agregar Producto</div>
-            <div className="text-xs text-[#94A3B8] mb-5">Define un nuevo producto para vender</div>
+            <div className="absolute top-0 left-0 right-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,107,53,0.6), rgba(0,226,158,0.4), transparent)' }} />
+            <button onClick={onClose} className="absolute top-4 right-4 w-8 h-8 rounded-xl flex items-center justify-center text-sm transition-all" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text-muted)' }}>✕</button>
+
+            <div className="text-lg font-bold mb-0.5" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>🆕 Nuevo Producto</div>
+            <div className="text-xs mb-5" style={{ color: 'var(--text-muted)', fontFamily: 'Inter', fontWeight: 300 }}>Define un producto para tu catálogo</div>
+
             <div className="grid grid-cols-2 gap-3 mb-3">
               <Field label="Nombre">
-                <input value={name} onChange={e => setName(e.target.value)} placeholder="Paleta de Limón" className={inp} />
+                <input value={name} onChange={e => setName(e.target.value)} placeholder="Paleta de Limón" className="input-glass" />
               </Field>
               <Field label="Emoji">
-                <input value={emoji} onChange={e => setEmoji(e.target.value)} placeholder="🍭" maxLength={2} className={inp} />
+                <input value={emoji} onChange={e => setEmoji(e.target.value)} placeholder="🍭" maxLength={2} className="input-glass" />
               </Field>
             </div>
             <div className="grid grid-cols-2 gap-3 mb-4">
               <Field label="Precio de venta (COP)">
-                <input type="number" value={price} onChange={e => setPrice(e.target.value)} placeholder="2500" className={inp} />
+                <input type="number" value={price} onChange={e => setPrice(e.target.value)} placeholder="2500" className="input-glass" />
               </Field>
               <Field label="Costo por unidad (COP)">
-                <input type="number" value={cost} onChange={e => setCost(e.target.value)} placeholder="800" className={inp} />
+                <input type="number" value={cost} onChange={e => setCost(e.target.value)} placeholder="800" className="input-glass" />
               </Field>
             </div>
-            <div className="bg-blue-500/5 border border-[rgba(59,130,246,0.15)] rounded-xl p-3 mb-5">
-              <div className="flex justify-between text-xs py-1"><span className="text-[#94A3B8]">Ganancia por unidad</span><span className="text-[#22C55E] font-semibold">{p > 0 ? fmtCOP(profit) : '—'}</span></div>
-              <div className="flex justify-between text-xs py-1"><span className="text-[#94A3B8]">Margen</span><span className="text-[#3B82F6] font-semibold">{p > 0 ? margin.toFixed(1) + '%' : '—'}</span></div>
+
+            <div className="rounded-2xl p-4 mb-5" style={{ background: 'rgba(255,107,53,0.05)', border: '1px solid rgba(255,107,53,0.12)' }}>
+              <div className="flex justify-between text-xs py-1"><span style={{ color: 'var(--text-muted)' }}>Ganancia por unidad</span><span className="mono font-semibold" style={{ color: '#00E29E' }}>{p > 0 ? fmtCOP(profit) : '—'}</span></div>
+              <div className="flex justify-between text-xs py-1"><span style={{ color: 'var(--text-muted)' }}>Margen</span><span className="mono font-semibold" style={{ color: '#FF6B35' }}>{p > 0 ? margin.toFixed(1) + '%' : '—'}</span></div>
             </div>
+
             <div className="flex gap-2">
-              <button onClick={handleSave} disabled={loading} className="flex-1 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-sm font-bold hover:opacity-90 transition-all disabled:opacity-50">
-                ✅ Guardar Producto
+              <button onClick={handleSave} disabled={loading} className="btn-primary flex-1">
+                {loading ? 'Guardando...' : '✅ Guardar'}
               </button>
-              <button onClick={onClose} className="px-4 rounded-xl border border-white/10 bg-white/4 text-[#94A3B8] text-sm font-semibold hover:text-white transition-all">
-                Cancelar
-              </button>
+              <button onClick={onClose} className="btn-glass px-5">Cancelar</button>
             </div>
           </motion.div>
         </div>
@@ -96,10 +99,8 @@ export function ProductModal({ open, onClose, onSaved, demoAdd }: Props) {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <label className="block text-[10px] text-[#94A3B8] font-semibold uppercase tracking-wider mb-1">{label}</label>
+      <label className="block text-[10px] font-semibold uppercase tracking-widest mb-1.5" style={{ color: 'var(--text-muted)', fontFamily: 'Inter' }}>{label}</label>
       {children}
     </div>
   )
 }
-
-const inp = 'w-full bg-white/4 border border-white/8 rounded-lg px-3 py-2.5 text-white text-sm outline-none focus:border-purple-500 transition-all placeholder:text-white/20'

@@ -54,42 +54,50 @@ export function InventoryModal({ open, onClose, onSaved, products, demoAdd }: Pr
   return (
     <AnimatePresence>
       {open && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 backdrop-blur-sm" onClick={e => e.target === e.currentTarget && onClose()}>
+        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center" style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)' }} onClick={e => e.target === e.currentTarget && onClose()}>
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            className="relative bg-[#111827] border border-purple-500/20 rounded-2xl p-7 w-[440px] max-w-[95vw]"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 40 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className="glass specular w-full sm:w-[440px] max-w-[95vw] rounded-t-3xl sm:rounded-3xl p-7 relative overflow-hidden"
           >
-            <div className="absolute top-0 left-0 right-0 h-px rounded-t-2xl bg-gradient-to-r from-transparent via-purple-500 to-blue-500" />
-            <button onClick={onClose} className="absolute top-4 right-4 w-7 h-7 rounded-lg bg-white/5 text-[#94A3B8] hover:text-white text-sm flex items-center justify-center">✕</button>
-            <div className="text-lg font-black mb-1">📦 Agregar Inventario</div>
-            <div className="text-xs text-[#94A3B8] mb-5">Registra una compra de stock</div>
+            <div className="absolute top-0 left-0 right-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,219,60,0.6), rgba(255,107,53,0.4), transparent)' }} />
+            <button onClick={onClose} className="absolute top-4 right-4 w-8 h-8 rounded-xl flex items-center justify-center text-sm transition-all" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text-muted)' }}>✕</button>
+
+            <div className="text-lg font-bold mb-0.5" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>📦 Agregar Inventario</div>
+            <div className="text-xs mb-5" style={{ color: 'var(--text-muted)', fontFamily: 'Inter', fontWeight: 300 }}>Registra una compra de stock</div>
+
             <Field label="Producto">
-              <select value={productId} onChange={e => setProductId(e.target.value)} className={inp}>
-                {products.map(p => <option key={p.id} value={p.id}>{p.emoji} {p.name}</option>)}
+              <select value={productId} onChange={e => setProductId(e.target.value)} className="input-glass">
+                {products.map(p => <option key={p.id} value={p.id} style={{ background: '#131318' }}>{p.emoji} {p.name}</option>)}
               </select>
             </Field>
-            <div className="grid grid-cols-2 gap-3 mb-3 mt-3">
+            <div className="grid grid-cols-2 gap-3 mt-3 mb-3">
               <Field label="Cantidad (unidades)">
-                <input type="number" value={qty} onChange={e => setQty(e.target.value)} min="1" className={inp} />
+                <input type="number" value={qty} onChange={e => setQty(e.target.value)} min="1" className="input-glass" />
               </Field>
               <Field label="Costo total (COP)">
-                <input type="number" value={totalCost} onChange={e => setTotalCost(e.target.value)} placeholder="8000" className={inp} />
+                <input type="number" value={totalCost} onChange={e => setTotalCost(e.target.value)} placeholder="8000" className="input-glass" />
               </Field>
             </div>
             <Field label="Proveedor (opcional)">
-              <input value={supplier} onChange={e => setSupplier(e.target.value)} placeholder="Nombre del proveedor" className={`${inp} mt-3 mb-4`} />
+              <input value={supplier} onChange={e => setSupplier(e.target.value)} placeholder="Nombre del proveedor" className="input-glass mb-4" />
             </Field>
-            <div className="bg-blue-500/5 border border-[rgba(59,130,246,0.15)] rounded-xl p-3 mb-5">
-              <div className="flex justify-between text-xs py-1"><span className="text-[#94A3B8]">Costo por unidad</span><span className="font-semibold">{q > 0 && tc > 0 ? fmtCOP(costPerUnit) : '—'}</span></div>
-              <div className="flex justify-between text-xs py-1 border-t border-white/5 mt-1 pt-2 font-bold text-sm"><span className="text-[#94A3B8]">Inversión total</span><span>{tc > 0 ? fmtCOP(tc) : '—'}</span></div>
+
+            <div className="rounded-2xl p-4 mb-5" style={{ background: 'rgba(255,219,60,0.05)', border: '1px solid rgba(255,219,60,0.12)' }}>
+              <div className="flex justify-between text-xs py-1"><span style={{ color: 'var(--text-muted)' }}>Costo por unidad</span><span className="mono font-semibold">{q > 0 && tc > 0 ? fmtCOP(costPerUnit) : '—'}</span></div>
+              <div className="flex justify-between text-xs py-1.5 mt-1 border-t font-semibold" style={{ borderColor: 'rgba(255,255,255,0.06)', color: '#FFDB3C' }}>
+                <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>Inversión total</span>
+                <span className="mono">{tc > 0 ? fmtCOP(tc) : '—'}</span>
+              </div>
             </div>
+
             <div className="flex gap-2">
-              <button onClick={handleSave} disabled={loading} className="flex-1 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-sm font-bold hover:opacity-90 transition-all disabled:opacity-50">
-                📦 Agregar
+              <button onClick={handleSave} disabled={loading} className="btn-primary flex-1">
+                {loading ? 'Guardando...' : '📦 Agregar'}
               </button>
-              <button onClick={onClose} className="px-4 rounded-xl border border-white/10 bg-white/4 text-[#94A3B8] text-sm font-semibold hover:text-white transition-all">Cancelar</button>
+              <button onClick={onClose} className="btn-glass px-5">Cancelar</button>
             </div>
           </motion.div>
         </div>
@@ -101,10 +109,8 @@ export function InventoryModal({ open, onClose, onSaved, products, demoAdd }: Pr
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <label className="block text-[10px] text-[#94A3B8] font-semibold uppercase tracking-wider mb-1">{label}</label>
+      <label className="block text-[10px] font-semibold uppercase tracking-widest mb-1.5" style={{ color: 'var(--text-muted)', fontFamily: 'Inter' }}>{label}</label>
       {children}
     </div>
   )
 }
-
-const inp = 'w-full bg-white/4 border border-white/8 rounded-lg px-3 py-2.5 text-white text-sm outline-none focus:border-purple-500 transition-all placeholder:text-white/20'

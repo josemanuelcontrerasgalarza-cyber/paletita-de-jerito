@@ -6,7 +6,7 @@ import { fmtCOP, ownershipPct } from '@/lib/calculations'
 import { showToast } from '@/components/shared/Toast'
 import { Partner } from '@/lib/types'
 
-const COLORS = ['#3B82F6','#8B5CF6','#22C55E','#F59E0B','#EF4444','#EC4899']
+const COLORS = ['#FF6B35','#FFDB3C','#00E29E','#8B5CF6','#FF4D4F','#38BDF8']
 
 interface Props {
   open: boolean
@@ -51,36 +51,41 @@ export function PartnerModal({ open, onClose, onSaved, existingPartners, demoAdd
   return (
     <AnimatePresence>
       {open && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 backdrop-blur-sm" onClick={e => e.target === e.currentTarget && onClose()}>
+        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center" style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)' }} onClick={e => e.target === e.currentTarget && onClose()}>
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            className="relative bg-[#111827] border border-purple-500/20 rounded-2xl p-7 w-[440px] max-w-[95vw]"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 40 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className="glass specular w-full sm:w-[440px] max-w-[95vw] rounded-t-3xl sm:rounded-3xl p-7 relative overflow-hidden"
           >
-            <div className="absolute top-0 left-0 right-0 h-px rounded-t-2xl bg-gradient-to-r from-transparent via-purple-500 to-blue-500" />
-            <button onClick={onClose} className="absolute top-4 right-4 w-7 h-7 rounded-lg bg-white/5 text-[#94A3B8] hover:text-white text-sm flex items-center justify-center">✕</button>
-            <div className="text-lg font-black mb-1">👥 Agregar Socio</div>
-            <div className="text-xs text-[#94A3B8] mb-5">Registra un nuevo socio inversor</div>
+            <div className="absolute top-0 left-0 right-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(139,92,246,0.6), rgba(255,107,53,0.4), transparent)' }} />
+            <button onClick={onClose} className="absolute top-4 right-4 w-8 h-8 rounded-xl flex items-center justify-center text-sm transition-all" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text-muted)' }}>✕</button>
+
+            <div className="text-lg font-bold mb-0.5" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>👥 Agregar Socio</div>
+            <div className="text-xs mb-5" style={{ color: 'var(--text-muted)', fontFamily: 'Inter', fontWeight: 300 }}>Registra un nuevo socio inversor</div>
+
             <div className="grid grid-cols-2 gap-3 mb-3">
-              <Field label="Nombre"><input value={name} onChange={e => setName(e.target.value)} placeholder="Nombre" className={inp} /></Field>
-              <Field label="Emoji"><input value={emoji} onChange={e => setEmoji(e.target.value)} placeholder="😊" maxLength={2} className={inp} /></Field>
+              <Field label="Nombre"><input value={name} onChange={e => setName(e.target.value)} placeholder="Nombre" className="input-glass" /></Field>
+              <Field label="Emoji"><input value={emoji} onChange={e => setEmoji(e.target.value)} placeholder="😊" maxLength={2} className="input-glass" /></Field>
             </div>
             <Field label="Inversión (COP)">
-              <input type="number" value={investment} onChange={e => setInvestment(e.target.value)} placeholder="50000" className={`${inp} mb-3`} />
+              <input type="number" value={investment} onChange={e => setInvestment(e.target.value)} placeholder="50000" className="input-glass mb-3" />
             </Field>
             <Field label="Notas">
-              <input value={notes} onChange={e => setNotes(e.target.value)} placeholder="Opcional" className={`${inp} mb-4`} />
+              <input value={notes} onChange={e => setNotes(e.target.value)} placeholder="Opcional" className="input-glass mb-4" />
             </Field>
-            <div className="bg-blue-500/5 border border-[rgba(59,130,246,0.15)] rounded-xl p-3 mb-5">
-              <div className="flex justify-between text-xs py-1"><span className="text-[#94A3B8]">Total invertido (con nuevo socio)</span><span>{fmtCOP(totalInv)}</span></div>
-              <div className="flex justify-between text-xs py-1"><span className="text-[#94A3B8]">% participación</span><span className="text-[#3B82F6] font-semibold">{pct.toFixed(1)}%</span></div>
+
+            <div className="rounded-2xl p-4 mb-5" style={{ background: 'rgba(139,92,246,0.05)', border: '1px solid rgba(139,92,246,0.15)' }}>
+              <div className="flex justify-between text-xs py-1"><span style={{ color: 'var(--text-muted)' }}>Total invertido (con nuevo socio)</span><span className="mono">{fmtCOP(totalInv)}</span></div>
+              <div className="flex justify-between text-xs py-1"><span style={{ color: 'var(--text-muted)' }}>% participación</span><span className="mono font-semibold" style={{ color: '#8B5CF6' }}>{pct.toFixed(1)}%</span></div>
             </div>
+
             <div className="flex gap-2">
-              <button onClick={handleSave} disabled={loading} className="flex-1 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-sm font-bold hover:opacity-90 transition-all disabled:opacity-50">
-                👥 Agregar
+              <button onClick={handleSave} disabled={loading} className="btn-primary flex-1">
+                {loading ? 'Guardando...' : '👥 Agregar'}
               </button>
-              <button onClick={onClose} className="px-4 rounded-xl border border-white/10 bg-white/4 text-[#94A3B8] text-sm font-semibold hover:text-white transition-all">Cancelar</button>
+              <button onClick={onClose} className="btn-glass px-5">Cancelar</button>
             </div>
           </motion.div>
         </div>
@@ -92,10 +97,8 @@ export function PartnerModal({ open, onClose, onSaved, existingPartners, demoAdd
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <label className="block text-[10px] text-[#94A3B8] font-semibold uppercase tracking-wider mb-1">{label}</label>
+      <label className="block text-[10px] font-semibold uppercase tracking-widest mb-1.5" style={{ color: 'var(--text-muted)', fontFamily: 'Inter' }}>{label}</label>
       {children}
     </div>
   )
 }
-
-const inp = 'w-full bg-white/4 border border-white/8 rounded-lg px-3 py-2.5 text-white text-sm outline-none focus:border-purple-500 transition-all placeholder:text-white/20'

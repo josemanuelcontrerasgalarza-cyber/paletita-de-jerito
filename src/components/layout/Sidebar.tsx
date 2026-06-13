@@ -20,7 +20,7 @@ export function Sidebar() {
   const router = useRouter()
   const { sales } = useSales()
   const isDemo = typeof window !== 'undefined' && localStorage.getItem('pp_demo') === 'true'
-  const bizName = typeof window !== 'undefined' ? (localStorage.getItem('pp_demo_biz') || 'BUSINESS OS') : 'BUSINESS OS'
+  const bizName = typeof window !== 'undefined' ? (localStorage.getItem('pp_demo_biz') || 'Mi Negocio') : 'Mi Negocio'
 
   const todayStr = new Date().toDateString()
   const todaySales = sales.filter(s => new Date(s.created_at).toDateString() === todayStr)
@@ -40,32 +40,49 @@ export function Sidebar() {
   }
 
   return (
-    <div className="w-[220px] flex-shrink-0 flex flex-col h-screen sticky top-0 border-r border-[rgba(59,130,246,0.15)] bg-[rgba(13,17,23,0.97)]">
-      <div className="px-5 py-5 border-b border-[rgba(59,130,246,0.15)]">
-        <div
-          className="text-xl font-black"
-          style={{ background: 'linear-gradient(135deg,#3B82F6,#8B5CF6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
-        >
-          PopProfit
+    <div
+      className="w-[230px] flex-shrink-0 flex flex-col h-screen sticky top-0"
+      style={{
+        backdropFilter: 'blur(40px)',
+        WebkitBackdropFilter: 'blur(40px)',
+        background: 'rgba(14,14,19,0.85)',
+        borderRight: '1px solid rgba(255,255,255,0.07)',
+      }}
+    >
+      {/* Logo */}
+      <div className="px-6 py-6" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        <div className="flex items-center gap-3 mb-1">
+          <div className="text-2xl pulse-glow">🍭</div>
+          <div>
+            <div className="text-base font-bold leading-tight" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", background: 'linear-gradient(135deg,#FF6B35,#FFDB3C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              Paletita
+            </div>
+            <div className="text-[9px] uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>de Jerito</div>
+          </div>
         </div>
-        <div className="text-[10px] text-[#94A3B8] mt-0.5 tracking-widest uppercase">{bizName}</div>
+        <div className="text-[10px] mt-2 truncate" style={{ color: 'var(--text-muted)' }}>{bizName}</div>
         {isDemo && (
-          <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-yellow-500/15 text-yellow-400 border border-yellow-500/25 mt-1 inline-block">DEMO</span>
+          <span className="text-[9px] font-bold px-2 py-0.5 rounded-full mt-1.5 inline-block" style={{ background: 'rgba(255,219,60,0.1)', color: '#FFDB3C', border: '1px solid rgba(255,219,60,0.2)' }}>DEMO</span>
         )}
       </div>
 
-      <nav className="flex-1 py-3 overflow-y-auto">
+      {/* Nav */}
+      <nav className="flex-1 py-4 overflow-y-auto px-3">
         {NAV.map(item => {
           const active = pathname === item.href || pathname.startsWith(item.href + '/')
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-2.5 px-5 py-2.5 text-sm font-medium border-l-[3px] transition-all
-                ${active
-                  ? 'border-[#3B82F6] bg-[rgba(59,130,246,0.12)] text-[#3B82F6]'
-                  : 'border-transparent text-[#94A3B8] hover:bg-[rgba(59,130,246,0.07)] hover:text-white'
-                }`}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium mb-0.5 transition-all"
+              style={{
+                fontFamily: 'Inter',
+                fontWeight: active ? 600 : 400,
+                background: active ? 'rgba(255,107,53,0.1)' : 'transparent',
+                color: active ? '#FF6B35' : 'var(--text-muted)',
+                border: active ? '1px solid rgba(255,107,53,0.2)' : '1px solid transparent',
+                boxShadow: active ? '0 0 12px rgba(255,107,53,0.1)' : 'none',
+              }}
             >
               <span className="text-base w-5 text-center">{item.icon}</span>
               {item.label}
@@ -74,15 +91,18 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="p-4 border-t border-[rgba(59,130,246,0.15)]">
-        <div className="bg-[rgba(34,197,94,0.07)] border border-[rgba(34,197,94,0.15)] rounded-xl p-3 mb-3">
-          <div className="text-[10px] text-[#94A3B8] uppercase tracking-widest">Ganancia hoy</div>
-          <div className="text-xl font-black text-[#22C55E] mt-0.5">{fmtCOP(todayProfit)}</div>
-          <div className="text-[10px] text-[#94A3B8] mt-0.5">Vendidas: {todaySold} uds</div>
+      {/* Today stats */}
+      <div className="px-4 pb-4" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+        <div className="rounded-2xl p-4 mt-4 mb-3 relative overflow-hidden" style={{ background: 'rgba(0,226,158,0.06)', border: '1px solid rgba(0,226,158,0.12)' }}>
+          <div className="absolute -right-4 -top-4 w-20 h-20 rounded-full" style={{ background: 'radial-gradient(circle, rgba(0,226,158,0.15), transparent 70%)' }} />
+          <div className="text-[9px] uppercase tracking-widest mb-1" style={{ color: 'var(--text-muted)', fontFamily: 'Inter' }}>Ganancia hoy</div>
+          <div className="text-xl font-bold mono" style={{ color: '#00E29E' }}>{fmtCOP(todayProfit)}</div>
+          <div className="text-[10px] mt-0.5" style={{ color: 'var(--text-muted)' }}>{todaySold} unidades vendidas</div>
         </div>
         <button
           onClick={handleLogout}
-          className="w-full py-2 rounded-lg border border-red-500/20 bg-red-500/5 text-[#EF4444] text-xs font-semibold hover:bg-red-500/10 transition-all"
+          className="w-full py-2.5 rounded-xl text-xs font-semibold transition-all"
+          style={{ background: 'rgba(255,77,79,0.06)', border: '1px solid rgba(255,77,79,0.15)', color: '#FF4D4F', fontFamily: 'Inter' }}
         >
           ↩ Cerrar sesión
         </button>
