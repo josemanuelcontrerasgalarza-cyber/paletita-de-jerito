@@ -18,13 +18,17 @@ export default function POSPage() {
   function stockFor(pid: string) { return inventory.find(i => i.product_id === pid)?.qty ?? 0 }
 
   function addToCart(pid: string) {
-    setCart(prev => ({ ...prev, [pid]: (prev[pid] || 0) + 1 }))
+    const available = stockFor(pid)
+    const current = cart[pid] || 0
+    if (current >= available) { showToast('Sin stock suficiente', 'error'); return }
+    setCart(prev => ({ ...prev, [pid]: current + 1 }))
   }
 
   function changeQty(pid: string, delta: number) {
     setCart(prev => {
       const n = (prev[pid] || 0) + delta
       if (n <= 0) { const { [pid]: _, ...rest } = prev; return rest }
+      if (delta > 0 && n > stockFor(pid)) { showToast('Sin stock suficiente', 'error'); return prev }
       return { ...prev, [pid]: n }
     })
   }
@@ -78,7 +82,7 @@ export default function POSPage() {
   }
 
   return (
-    <div className="grid grid-cols-[1fr_1.3fr] gap-5">
+    <div className="grid grid-cols-1 md:grid-cols-[1fr_1.3fr] gap-5">
       {/* Products */}
       <div>
         <div className="text-[11px] text-[#94A3B8] font-semibold uppercase tracking-widest mb-3">Productos</div>

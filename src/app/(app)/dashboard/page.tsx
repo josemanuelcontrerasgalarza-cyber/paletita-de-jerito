@@ -13,7 +13,7 @@ const STATS = (totalRev: number, totalProfit: number, totalInv: number, totalSol
   { icon: '📦', label: 'Stock', value: totalInv.toLocaleString(), color: '#FFDB3C' },
   { icon: '🏷', label: 'Vendidas', value: totalSold.toLocaleString(), color: '#FF6B35' },
   { icon: '👥', label: 'Socios', value: partnerCount.toString(), color: '#a09aad' },
-  { icon: '🚀', label: 'Reinversión', value: reinvFund, color: '#FF6B35' },
+  { icon: '📅', label: 'Ganancia Hoy', value: reinvFund, color: '#FF6B35' },
   { icon: '💎', label: 'Margen', value: avgMargin, color: '#00E29E' },
   { icon: '🍭', label: 'Productos', value: productCount.toString(), color: '#FFDB3C' },
 ]
@@ -29,10 +29,11 @@ export default function DashboardPage() {
   const totalSold = sales.reduce((a, s) => a + s.qty, 0)
   const totalInv = inventory.reduce((a, i) => a + i.qty, 0)
   const avgMargin = totalRev > 0 ? (totalProfit / totalRev * 100).toFixed(1) + '%' : '—'
-  const reinvFund = fmtCOP(totalProfit * 0.5)
+  const todayStr = new Date().toDateString()
+  const todayProfit = sales.filter(s => new Date(s.created_at).toDateString() === todayStr).reduce((a, s) => a + s.profit, 0)
   const recent = sales.slice(0, 8)
 
-  const stats = STATS(totalRev, totalProfit, totalInv, totalSold, partners.length, reinvFund, avgMargin, products.length)
+  const stats = STATS(totalRev, totalProfit, totalInv, totalSold, partners.length, fmtCOP(todayProfit), avgMargin, products.length)
 
   return (
     <div>
@@ -104,7 +105,7 @@ export default function DashboardPage() {
             <table className="hidden sm:table w-full border-collapse">
               <thead>
                 <tr>
-                  {['Producto','Cant.','Ingreso','Ganancia','Hora'].map(h => (
+                  {['Producto','Cant.','Ingreso','Ganancia','Fecha'].map(h => (
                     <th key={h} className="text-left px-6 py-3 text-[9px] uppercase tracking-widest font-semibold" style={{ color: 'var(--text-muted)', background: 'rgba(255,255,255,0.02)' }}>{h}</th>
                   ))}
                 </tr>
@@ -117,7 +118,7 @@ export default function DashboardPage() {
                     <td className="px-6 py-3 text-sm mono font-semibold" style={{ color: '#00E29E' }}>{fmtCOP(s.revenue)}</td>
                     <td className="px-6 py-3 text-sm mono font-semibold" style={{ color: '#FF6B35' }}>{fmtCOP(s.profit)}</td>
                     <td className="px-6 py-3 text-sm mono" style={{ color: 'var(--text-muted)' }}>
-                      {new Date(s.created_at).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}
+                      {new Date(s.created_at).toLocaleString('es-CO', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' })}
                     </td>
                   </tr>
                 ))}

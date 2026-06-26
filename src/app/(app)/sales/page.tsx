@@ -12,14 +12,21 @@ export default function SalesPage() {
   const weekAgo = new Date(now); weekAgo.setDate(now.getDate() - 7)
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
 
-  const todayRev = sales.filter(s => new Date(s.created_at).toDateString() === todayStr).reduce((a, s) => a + s.revenue, 0)
-  const weekRev = sales.filter(s => new Date(s.created_at) >= weekAgo).reduce((a, s) => a + s.revenue, 0)
-  const monthRev = sales.filter(s => new Date(s.created_at) >= monthStart).reduce((a, s) => a + s.revenue, 0)
+  const todaySales = sales.filter(s => new Date(s.created_at).toDateString() === todayStr)
+  const weekSales = sales.filter(s => new Date(s.created_at) >= weekAgo)
+  const monthSales = sales.filter(s => new Date(s.created_at) >= monthStart)
+
+  const todayRev = todaySales.reduce((a, s) => a + s.revenue, 0)
+  const weekRev = weekSales.reduce((a, s) => a + s.revenue, 0)
+  const monthRev = monthSales.reduce((a, s) => a + s.revenue, 0)
+  const todayProfit = todaySales.reduce((a, s) => a + s.profit, 0)
+  const weekProfit = weekSales.reduce((a, s) => a + s.profit, 0)
+  const monthProfit = monthSales.reduce((a, s) => a + s.profit, 0)
 
   return (
     <div>
       {/* Stats compactas */}
-      <div className="grid grid-cols-3 gap-3 mb-5">
+      <div className="grid grid-cols-3 gap-3 mb-3">
         {[
           { icon: '📅', label: 'Hoy', value: fmtCOP(todayRev), color: '#00E29E' },
           { icon: '📆', label: 'Semana', value: fmtCOP(weekRev), color: '#FF6B35' },
@@ -34,7 +41,27 @@ export default function SalesPage() {
           >
             <div className="absolute -top-3 -right-3 w-12 h-12 rounded-full" style={{ background: `radial-gradient(circle, ${s.color}20, transparent 70%)` }} />
             <div className="text-lg mb-1">{s.icon}</div>
-            <div className="text-[9px] uppercase tracking-widest mb-1" style={{ color: 'var(--text-muted)', fontFamily: 'Inter' }}>{s.label}</div>
+            <div className="text-[9px] uppercase tracking-widest mb-0.5" style={{ color: 'var(--text-muted)', fontFamily: 'Inter' }}>{s.label} · Ingresos</div>
+            <div className="text-sm sm:text-base font-bold mono" style={{ color: s.color }}>{s.value}</div>
+          </motion.div>
+        ))}
+      </div>
+      <div className="grid grid-cols-3 gap-3 mb-5">
+        {[
+          { icon: '📈', label: 'Hoy · Ganancia', value: fmtCOP(todayProfit), color: '#00E29E' },
+          { icon: '📈', label: 'Semana · Ganancia', value: fmtCOP(weekProfit), color: '#FF6B35' },
+          { icon: '📈', label: 'Mes · Ganancia', value: fmtCOP(monthProfit), color: '#FFDB3C' },
+        ].map((s, i) => (
+          <motion.div
+            key={s.label}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: (i + 3) * 0.05 }}
+            className="glass-card p-3 sm:p-4 relative overflow-hidden"
+          >
+            <div className="absolute -top-3 -right-3 w-12 h-12 rounded-full" style={{ background: `radial-gradient(circle, ${s.color}15, transparent 70%)` }} />
+            <div className="text-lg mb-1">{s.icon}</div>
+            <div className="text-[9px] uppercase tracking-widest mb-0.5" style={{ color: 'var(--text-muted)', fontFamily: 'Inter' }}>{s.label}</div>
             <div className="text-sm sm:text-base font-bold mono" style={{ color: s.color }}>{s.value}</div>
           </motion.div>
         ))}
